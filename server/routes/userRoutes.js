@@ -19,7 +19,7 @@ userRouter.post(
   "/update",
   upload.fields([
     { name: "profile", maxCount: 1 },
-    { name: "cover", maxCount: 1 },
+    { name: "cover", maxCount: 1 }, 
   ]),
   protect,
   updateUserData
