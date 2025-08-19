@@ -76,8 +76,14 @@ const deleteStory = inngest.createFunction(
     await step.sleepUntil("wait-for-24-hours", in24Hours);
     await step.run("delete-story", async () => {
       await Story.findByIdAndDelete(storyId);
-      return {message: `story deleted with id : ${storyId}`}
+      return { message: `story deleted with id : ${storyId}` };
     });
   }
 );
-export const functions = [syncUserCreation, syncUserUpdation, syncUserDeletion,deleteStory];
+
+export const functions = [
+  syncUserCreation,
+  syncUserUpdation,
+  syncUserDeletion,
+  deleteStory,
+];
