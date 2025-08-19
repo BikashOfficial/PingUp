@@ -5,6 +5,7 @@ import {
   followUser,
   getUserConnections,
   getUserData,
+  getUserProfile,
   sendConnectionRequest,
   unfollowUser,
   updateUserData,
@@ -19,7 +20,7 @@ userRouter.post(
   "/update",
   upload.fields([
     { name: "profile", maxCount: 1 },
-    { name: "cover", maxCount: 1 }, 
+    { name: "cover", maxCount: 1 },
   ]),
   protect,
   updateUserData
@@ -30,5 +31,6 @@ userRouter.post("/unfollow", protect, unfollowUser);
 userRouter.post("/connect", protect, sendConnectionRequest);
 userRouter.post("/accept", protect, acceptUserConnections);
 userRouter.get("/connections", protect, getUserConnections);
+userRouter.post("/profiles", getUserProfile);
 
 export default userRouter;
