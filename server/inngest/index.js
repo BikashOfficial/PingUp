@@ -65,19 +65,37 @@ const syncUserDeletion = inngest.createFunction(
   }
 );
 
-// function to delete story after 24hr
+// Function to delete story after 24hr
 const deleteStory = inngest.createFunction(
   { id: "story-delete" },
   { event: "app/story.delete" },
+  async ({ event, step, logger }) => {
+    try {
+      const { storyId } = event.data;
 
-  async ({ event, step }) => {
-    const { storyId } = event.data;
-    const in24Hours = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    await step.sleepUntil("wait-for-24-hours", in24Hours);
-    await step.run("delete-story", async () => {
-      await Story.findByIdAndDelete(storyId);
-      return { message: `story deleted with id : ${storyId}` };
-    });
+      if (!storyId) {
+        throw new Error("Missing story ID");
+      }
+
+      // Schedule deletion after 24 hours
+      const in24Hours = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      await step.sleepUntil("wait-for-24-hours", in24Hours);
+
+      await step.run("delete-story", async () => {
+        const deletedStory = await Story.findByIdAndDelete(storyId);
+
+        if (!deletedStory) {
+          logger.warn(`Story ${storyId} not found for deletion`);
+          return { message: `Story ${storyId} was already deleted` };
+        }
+
+        logger.info(`Story deleted successfully: ${storyId}`);
+        return { message: `Story deleted with ID: ${storyId}` };
+      });
+    } catch (error) {
+      logger.error(`Failed to delete story: ${error.message}`);
+      throw error;
+    }
   }
 );
 
