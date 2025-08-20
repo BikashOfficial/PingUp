@@ -1,10 +1,18 @@
 import React, { useState } from 'react'
 import { dummyUserData } from '../assets/assets'
 import { ArrowLeftIcon, Pencil, Save } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux'
+import { updateUser } from '../features/user/userSlice';
+import { useAuth } from '@clerk/clerk-react';
+import toast from 'react-hot-toast';
 
 const ProfileModel = ({ setShowEdit }) => {
 
-    const user = dummyUserData;
+    const dispatch = useDispatch()
+    const { getToken } = useAuth()
+
+    const user = useSelector((state) => state.user.value);
 
     const [editForm, setEditForm] = useState({
         username: user.username,
@@ -18,6 +26,29 @@ const ProfileModel = ({ setShowEdit }) => {
 
     const handleSaveProfile = async (e) => {
         e.preventDefault();
+        try {
+
+            const userData = new FormData();
+            const { full_name, username, bio, location, profile_picture, cover_photo } = editForm
+
+            userData.append('username', username);
+            userData.append('full_name', full_name);
+            userData.append('bio', bio);
+            userData.append('location', location);
+            if (profile_picture) {
+                userData.append('profile', profile_picture);
+            }
+            if (cover_photo) {
+                userData.append('cover', cover_photo);
+            }
+
+            const token = await getToken()
+            dispatch(updateUser({ userData, token }))
+
+            setShowEdit(false)
+        } catch (error) {
+            toast.error(error.message)
+        }
     }
 
     return (
@@ -31,12 +62,16 @@ const ProfileModel = ({ setShowEdit }) => {
                         </div>
 
                         <div>
-                            <button className='bg-green-600/90 px-4 py-1.5 rounded-lg cursor-pointer hover:bg-green-700/90 transition duration-200 shadow-sm shadow-green-600 active:scale-97 border-none text-white' onClick={() => handleSaveProfile} type='button'>
+                            <button className='bg-green-600/90 px-4 py-1.5 rounded-lg cursor-pointer hover:bg-green-700/90 transition duration-200 shadow-sm shadow-green-600 active:scale-97 border-none text-white' onClick={e => toast.promise(
+                                handleSaveProfile(e), { loading: 'Saving...' }
+                            )} type='button'>
                                 Save Changes
                             </button>
                         </div>
                     </div>
-                    <form className='space-y-4' onSubmit={handleSaveProfile}>
+                    <form className='space-y-4' onSubmit={e => toast.promise(
+                        handleSaveProfile(e), { loading: 'Saving...' }
+                    )}>
 
 
 
