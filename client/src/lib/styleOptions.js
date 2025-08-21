@@ -19,11 +19,9 @@ export const fonts = [
 ];
 
 export const fontSizes = [
-  '1rem',     // text-base
-  '1.125rem', // text-lg
-  '1.25rem',  // text-xl
-  '1.5rem',   // text-2xl
-  '1.7rem',   // text-3xl
-  '1.88rem',  // text-4xl-ish
-  '2.5rem'    // text-5xl
+  '24px',   // Normal
+  '32px',   // Large
+  '40px',   // Larger
+  '48px',   // Extra Large
+  '56px'    // Huge
 ];

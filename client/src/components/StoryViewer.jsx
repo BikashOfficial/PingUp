@@ -108,8 +108,23 @@ const StoryViewer = ({ stories, viewStory, setViewStory }) => {
                 return <video autoPlay controls onEnded={goToNextStory} className='max-h-screen' src={viewStory.media_url} />
             case 'text':
                 return (
-                    <div className='select-none w-full h-full flex items-center justify-center p-8 text-white text-2xl text-center'>
-                        {viewStory.content}
+                    <div className='w-full h-full flex items-center justify-center p-4 sm:p-8'>
+                        <div 
+                            className='select-none max-w-[85%] sm:max-w-[80%] overflow-y-auto scrollbar-none'
+                            style={{
+                                fontFamily: viewStory.font || 'inherit',
+                                fontSize: viewStory.textSize || '24px',
+                                fontWeight: viewStory.isBold ? '900' : '400',
+                                textAlign: 'center',
+                                color: 'white',
+                                wordBreak: 'break-word',
+                                maxHeight: '80vh',
+                                overflowWrap: 'break-word',
+                                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                            }}
+                        >
+                            {viewStory.content}
+                        </div>
                     </div>
                 )
             default:

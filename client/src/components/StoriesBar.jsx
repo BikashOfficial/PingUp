@@ -4,8 +4,13 @@ import { Plus } from 'lucide-react'
 import moment from 'moment'
 import StoryModel from './StoryModel'
 import StoryViewer from './StoryViewer'
+import { useAuth } from '@clerk/clerk-react'
+import api from '../api/axios'
+import toast from 'react-hot-toast'
 
 const StoriesBar = () => {
+
+    const { getToken } = useAuth()
 
     const [stories, setStories] = useState([])
     const [showModel, setShowModel] = useState(false)
@@ -13,7 +18,22 @@ const StoriesBar = () => {
     const [viewStory, setViewStory] = useState(null)
 
     const fetchStories = async () => {
-        setStories(dummyStoriesData)
+        try {
+            const token = await getToken();
+
+            const { data } = await api.get(`/api/story/get`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+
+            if (data.success) {
+                setStories(data.stories)
+            } else {
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            toast.error(error.message)
+        }
     }
 
     useEffect(() => {
@@ -44,18 +64,36 @@ const StoriesBar = () => {
                             <p className='text-white absolute bottom-1 right-2 z-10 text-xs'>{moment(story.createdAt).fromNow()}</p>
 
 
-                            {
-                                story.media_type !== 'text' && (
-                                    <div className='absolute inset-0 z-1 rounded-lg bg-black overflow-hidden'>
-                                        {
-                                            story.media_type === 'image' ?
-                                                <img src={story.media_url} alt="" className='h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80' />
-                                                :
-                                                <video src={story.media_url} className='h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80'></video>
-                                        }
+                            {/* Background for all story types */}
+                            <div className='absolute inset-0 z-1 rounded-lg overflow-hidden'
+                                style={{
+                                    backgroundColor: story.media_type === 'text' ? story.background_color : 'black'
+                                }}>
+                                {story.media_type === 'text' ? (
+                                    <div className='h-full w-full flex items-center justify-center p-2 text-white/80'>
+                                        <p className='line-clamp-3 text-sm text-center'
+                                            style={{
+                                                fontFamily: story.font || 'inherit',
+                                                fontWeight: story.isBold ? '700' : '400'
+                                            }}>
+                                            {story.content}
+                                        </p>
                                     </div>
-                                )
-                            }
+                                ) : story.media_type === 'image' ? (
+                                    <img 
+                                        src={story.media_url} 
+                                        alt="" 
+                                        className='h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80' 
+                                        loading="lazy"
+                                    />
+                                ) : (
+                                    <video 
+                                        src={story.media_url} 
+                                        className='h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80'
+                                        preload="metadata"
+                                    />
+                                )}
+                            </div>
 
                         </div>
 
