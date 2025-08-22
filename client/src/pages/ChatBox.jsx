@@ -1,7 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useId, useRef, useState } from 'react'
 import { dummyMessagesData, dummyUserData } from '../assets/assets'
-import {ArrowLeftIcon,ImageIcon, InfoIcon, SendHorizonal } from 'lucide-react'
-import { useNavigate, useOutletContext } from 'react-router-dom'
+import { ArrowLeftIcon, ImageIcon, InfoIcon, SendHorizonal } from 'lucide-react'
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useAuth } from '@clerk/clerk-react'
+import api from '../api/axios'
+import { addMessage, fetchMessages, resetMessages } from '../features/messages/messagesSlice'
+import toast from 'react-hot-toast'
 
 const ChatBox = () => {
   const setSidebarOpen = useOutletContext()
@@ -11,16 +16,70 @@ const ChatBox = () => {
     setSidebarOpen(false)
   }, [])
 
-  const messages = dummyMessagesData
+  const {messages} = useSelector((state) => state.messages)
+  const { userId } = useParams()
+  const { getToken } = useAuth()
+  const dispatch = useDispatch()
+
   const [text, setText] = useState('')
   const [image, setImage] = useState(null)
-  const [user, setUser] = useState(dummyUserData)
+  const [user, setUser] = useState(null)
 
   const messageEndRef = useRef(null)
 
-  const sendMessage = async () => {
 
+  const connections = useSelector((state) => state.connections.connections)
+
+  const fetchUserMessages = async () => {
+    try {
+      const token = getToken()
+      dispatch(fetchMessages({ token, userId }))
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
+
+  const sendMessage = async () => {
+    try {
+      if (!text && !image) return
+
+      const token = await getToken()
+      const formData = new FormData();
+
+      formData.append('to_user_id', userId)
+      formData.append('text', text)
+      image && formData.append('image', image)
+
+      const { data } = await api.post('/api/message/send', formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      if (data.success) {
+        setText('')
+        setImage(null)
+        dispatch(addMessage(data.message))
+      } else {
+        toast.error(data.message)
+      }
+
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
+  useEffect(() => {
+    fetchMessages()
+    return () => {
+      dispatch(resetMessages())
+    }
+  }, [useId])
+
+  useEffect(() => {
+    if (connections.length > 0) {
+      const user = connections.find(connection => connection._id === userId)
+      setUser(user)
+    }
+  }, [connections, userId])
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
