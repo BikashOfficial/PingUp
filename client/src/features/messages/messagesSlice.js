@@ -8,7 +8,7 @@ const initialState = {
 export const fetchMessages = createAsyncThunk(
   "messages/fetchMessages",
   async ({ token, userId }) => {
-    const { data } = await api.get(
+    const { data } = await api.post(
       "/api/message/get",
       { to_user_id: userId },
       {

@@ -68,11 +68,11 @@ const ChatBox = () => {
   }
 
   useEffect(() => {
-    fetchMessages()
+    fetchUserMessages()
     return () => {
       dispatch(resetMessages())
     }
-  }, [useId])
+  }, [userId])
 
   useEffect(() => {
     if (connections.length > 0) {
