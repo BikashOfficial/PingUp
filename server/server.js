@@ -14,7 +14,16 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://ping-up-gilt.vercel.app',
+    'https://ping-up-3nu2.vercel.app',
+    'http://localhost:5173', // for local development
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+}));
 app.use(clerkMiddleware());
 
 app.get("/", (req, res) => {
