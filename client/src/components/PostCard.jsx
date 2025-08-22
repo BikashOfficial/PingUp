@@ -35,7 +35,7 @@ const PostCard = ({ post }) => {
             return [...prev, currentUser._id]
           }
         })
-      }else{
+      } else {
         toast(data.message)
       }
     } catch (error) {
@@ -81,13 +81,34 @@ const PostCard = ({ post }) => {
         </div>
 
         <div className='flex items-center gap-1'>
-          <MessageCircle className={`w-4 h-4 cursor-pointer'} `}  />
+          <MessageCircle className={`w-4 h-4 cursor-pointer'} `} />
           <span>{12}</span>
         </div>
 
         <div className='flex items-center gap-1'>
-          <Share2Icon className={`w-4 h-4 cursor-pointer'} `}  />
-          <span>{12}</span>
+          <Share2Icon
+            className="w-4 h-4 cursor-pointer"
+            onClick={async () => {
+              if (navigator.share) {
+                try {
+                  await navigator.share({
+                    title: `${post.user?.full_name}'s post on PingUp`,
+                    text: post.content,
+                    url: window.location.href
+                  });
+                } catch (error) {
+                  if (error.name !== 'AbortError') {
+                    toast.error('Error sharing post');
+                  }
+                }
+              } else {
+                // Fallback for desktop or browsers that don't support Web Share API
+                navigator.clipboard.writeText(window.location.href);
+                toast.success('Link copied to clipboard!');
+              }
+            }}
+          />
+
         </div>
 
       </div>
