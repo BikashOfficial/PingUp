@@ -1,5 +1,4 @@
 import React from 'react'
-import { dummyConnectionsData } from '../assets/assets'
 import { Info, InfoIcon, MessageSquare } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
