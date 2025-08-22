@@ -2,7 +2,7 @@ import React from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
-const Notification = ({ t, message }) => {
+const Notify = ({ t, message }) => {
     const navigate = useNavigate()
     return (
         <div className={`maxw-md w-full bg-white shadow-lg rounded-lg flex border border-gray-300 hover:scale-105 transition`}>
@@ -32,4 +32,4 @@ const Notification = ({ t, message }) => {
     )
 }
 
-export default Notification
+export default Notify

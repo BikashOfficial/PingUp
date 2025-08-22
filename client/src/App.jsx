@@ -16,7 +16,7 @@ import { useDispatch } from 'react-redux'
 import { fetchUser } from './features/user/userSlice'
 import { fetchConnections } from './features/connections/connectionsSlice'
 import { addMessage } from './features/messages/messagesSlice'
-import Notification from './components/NOtification'
+import Notify from './components/Notify'
 
 const App = () => {
   const { pathname } = useLocation()
@@ -56,7 +56,7 @@ const App = () => {
           dispatch(addMessage(message))
         } else {
           toast.custom((t) => {
-            <Notification t={t} message={message} />
+            <Notify t={t} message={message} />
           },{position: 'bottom-right'})
         }
       }
