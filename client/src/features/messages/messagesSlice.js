@@ -28,7 +28,11 @@ const messagesSlice = createSlice({
       state.messages = action.payload;
     },
     addMessage: (state, action) => {
-      state.messages = [...state.messages, action.payload];
+      // Check if message already exists to prevent duplicates
+      const exists = state.messages.some(msg => msg._id === action.payload._id);
+      if (!exists) {
+        state.messages = [...state.messages, action.payload];
+      }
     },
     resetMessages: (state) => {
       state.messages = [];
@@ -36,7 +40,7 @@ const messagesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchMessages.fulfilled, (state, action) => {
-      if (action.payload) {
+      if (action.payload?.success && Array.isArray(action.payload.messages)) {
         state.messages = action.payload.messages;
       }
     });

@@ -5,18 +5,23 @@ import { useNavigate } from 'react-router-dom'
 const Notify = ({ t, message }) => {
     const navigate = useNavigate()
     return (
-        <div className={`maxw-md w-full bg-white shadow-lg rounded-lg flex border border-gray-300 hover:scale-105 transition`}>
+        <div className={`max-w-md w-full bg-white shadow-lg rounded-lg flex border border-gray-300 hover:scale-105 transition`}>
             <div className='flex-1 p-4'>
-                <div className='flex items-start'>
-                    <img src={message.from_user_id.profile_picture} alt="" className='size-10 rounded-full flex-shrink-0 mt-0.5' />
-                </div>
-                <div className='ml-3 flex-1'>
-                    <p className='text-sm font-medium to-gray-900'>
-                        {message.from_user_id.full_name}
-                    </p>
-                    <p className='text-sm font-medium to-gray-900'>
-                        {message.text.slice(0, 50)}
-                    </p>
+                <div className='flex items-start space-x-3'>
+                    <img 
+                        src={message.from_user_id?.profile_picture} 
+                        alt={message.from_user_id?.full_name} 
+                        className='size-10 rounded-full flex-shrink-0 mt-0.5' 
+                    />
+                    <div className='flex-1'>
+                        <p className='text-sm font-medium text-gray-900'>
+                            {message.from_user_id?.full_name}
+                        </p>
+                        <p className='text-sm text-gray-600'>
+                            {message.text?.slice(0, 50)}
+                            {message.text?.length > 50 && '...'}
+                        </p>
+                    </div>
                 </div>
             </div>
 

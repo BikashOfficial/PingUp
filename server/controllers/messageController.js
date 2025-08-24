@@ -95,7 +95,8 @@ export const getChatMessages = async (req, res) => {
         { from_user_id: userId, to_user_id },
         { from_user_id: to_user_id, to_user_id: userId },
       ],
-    }).sort({ created_at: -1 });
+    })
+    // .sort({ created_at: -1 });
 
     await Message.updateMany(
       { from_user_id: to_user_id, to_user_id: userId },
